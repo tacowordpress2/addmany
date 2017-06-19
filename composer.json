@@ -5,13 +5,27 @@
   "license": "MIT",
   "minimum-stability": "dev",
   "version": "0.1",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:tacowordpress2/frontend-loader.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:tacowordpress2/tacowordpress.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:tacowordpress2/util.git"
+    }
+  ],
   "require": {
     "php": ">= 5.4",
-    "jasand-pereza/frontend-loader": "dev-custom-paths"
+    "tacowordpress2/frontend-loader": "^1.0"
   },
   "require-dev": {
-    "tacowordpress/tacowordpress": "dev-master",
-    "tacowordpress/util": "dev-master"
+    "tacowordpress2/tacowordpress": "^1.0",
+    "tacowordpress2/util": "^1.0"
   },
   "autoload": {
     "psr-4": {
