@@ -28,7 +28,6 @@
   },
   "autoload": {
     "psr-4": {
-      "Taco\\": "src/",
       "Taco\\AddMany\\": "src/"
     }
   }
