@@ -10,7 +10,7 @@ class Factory {
 
   public static function create($fields_array=[], $other_options=[]) {
     $factory_instance = new \Taco\AddMany\Factory;
-    $factory_instance->current_object = new \Taco\AddMany;
+    $factory_instance->current_object = new \Taco\AddMany\AddMany;
 
     if(!\Taco\Util\Arr::iterable($fields_array)) {
       return $factory_instance;
@@ -73,7 +73,7 @@ class Factory {
 
   public static function createWithAddBySearch($post_class_method=null, $fields=null, $other_options=[]) {
     $factory_instance = new \Taco\AddMany\Factory;
-    $factory_instance->current_object = new \Taco\AddMany;
+    $factory_instance->current_object = new \Taco\AddMany\AddMany;
     if(strlen($post_class_method)) {
       $factory_instance->setAddBySearchMethod($post_class_method);
     }

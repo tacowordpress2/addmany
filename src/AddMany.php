@@ -1,6 +1,6 @@
 <?php
 
-namespace Taco;
+namespace Taco\AddMany;
 use \Taco\Util\Arr;
 use \Taco\Util\Collection;
 use \Taco\Util\Str;
@@ -352,9 +352,9 @@ class AddMany {
   }
 
   public static function getPairsWithKeyWords($keywords, $class_name) {
-    
+
     $class_name = Str::machine(Str::camelToHuman($class_name), '-');
-    
+
     $query = new \WP_Query([
       'post_type' => $class_name,
       's' => $keywords,
@@ -554,9 +554,9 @@ class AddMany {
     $post_id = trim(preg_replace('/\D/', '', $post_id));
     $subpost = \SubPost::find($post_id);
     $field_assigned_to = $subpost->get('field_assigned_to');
-    
+
     if(wp_is_post_revision($object_post_parent_id)) return;
-    
+
     $post_parent = \Taco\Post\Factory::create($object_post_parent_id);
     $parent_fields = $post_parent->getFields();
 
@@ -607,7 +607,7 @@ class AddMany {
 
     // If there are subposts to be removed, delete them.
     self::deleteSubPosts();
-    
+
     if(!array_key_exists('subposts', $_POST)) return false;
 
     $source = $_POST;
@@ -623,7 +623,7 @@ class AddMany {
         );
       }
     }
-    
+
     return true;
   }
 }

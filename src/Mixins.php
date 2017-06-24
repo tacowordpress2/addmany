@@ -6,7 +6,7 @@ namespace Taco\AddMany;
 Trait Mixins {
 
 
-    private static function getPostTypeStructure($class_method) 
+    private static function getPostTypeStructure($class_method)
     {
         $post_type_structure = explode('::',$class_method);
         if (count($post_type_structure) === 1) {
@@ -16,9 +16,9 @@ Trait Mixins {
     }
 
 
-    public function getSubPostsWithRefs($ID, $field_key, $field) 
+    public function getSubPostsWithRefs($ID, $field_key, $field)
     {
-        $subposts = \Taco\AddMany::getChildPosts($ID, $field_key);
+        $subposts = \Taco\AddMany\AddMany::getChildPosts($ID, $field_key);
         uasort($subposts, function($a, $b) {
             return ($a->order - $b->order);
         });
@@ -27,7 +27,7 @@ Trait Mixins {
         $linked_posts = array_map(function($s) use ($helper, $field_key, $ID) {
             $object = $helper::find($s->post_reference_id);
 
-            $subfields = \Taco\AddMany::getFieldDefinitionKeys(
+            $subfields = \Taco\AddMany\AddMany::getFieldDefinitionKeys(
                 $field_key, $ID, $s->get('fields_variation')
             );
             $subpost_fields = $s->getFields();
@@ -50,16 +50,16 @@ Trait Mixins {
     }
 
 
-    public function getRelations($field_key, $field) 
+    public function getRelations($field_key, $field)
     {
         if ($this->isAddBySearch($field)) {
             return $this->getSubPostsWithRefs($this->ID, $field_key, $field);
         }
-        return \Taco\AddMany::getChildPosts($this->ID,  $field_key);
+        return \Taco\AddMany\AddMany::getChildPosts($this->ID,  $field_key);
     }
 
 
-    public function isAddBySearch($field) 
+    public function isAddBySearch($field)
     {
         if (!array_key_exists('interfaces', $field['config_addmany'])) {
             return false;
@@ -74,20 +74,20 @@ Trait Mixins {
     }
 
 
-    public static function getPostClassFromAddBySearchConfig($field) 
+    public static function getPostClassFromAddBySearchConfig($field)
     {
         $class_method = $field['config_addmany']['interfaces']['addbysearch']['class_method'];
         return explode('::', $class_method)[0];
     }
 
 
-    public function hasFallBackMethod() 
+    public function hasFallBackMethod()
     {
         return method_exists($this, 'getFallBackRelatedPosts');
     }
 
 
-    public function hasOneRelationship($field) 
+    public function hasOneRelationship($field)
     {
         if (!\Taco\Util\Arr::iterable($field)) {
             return false;
@@ -118,7 +118,7 @@ Trait Mixins {
     * @param  string $keywords  optional param that allows querying by keywords
     * @return array - collection of posts
     */
-    public static function getPairsByTerm($taxonomy, $term_slug, $keywords='') 
+    public static function getPairsByTerm($taxonomy, $term_slug, $keywords='')
     {
         $results = self::getWhere([
             'tax_query' => [
@@ -196,7 +196,7 @@ Trait Mixins {
     }
 
 
-    public function getRenderMetaBoxField($name, $field=null) 
+    public function getRenderMetaBoxField($name, $field=null)
     {
         if (array_key_exists('data-addmany', $field)) {
             unset($field['config_addmany']);
