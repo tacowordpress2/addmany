@@ -42,7 +42,7 @@ export default class FieldsSubPostComponent extends React.Component {
   getRendered() {
     let self = this;
     let group = [];
-    this.selectorsWithWysiwyg = [];
+    this.fieldsWithWysiwyg = [];
     this.selectorsWithFile = [];
     const { store } = this.context;
     const state  = store.getState();
@@ -57,7 +57,7 @@ export default class FieldsSubPostComponent extends React.Component {
       let fieldAttribs = props.attribs;
 
       if(typeof fieldAttribs.class != 'undefined' && fieldAttribs.class == 'wysiwyg') {
-        this.selectorsWithWysiwyg.push(fieldName);
+        this.fieldsWithWysiwyg.push({fieldName: fieldName, attribs: fieldAttribs});
       }
       if(fieldAttribs.type === 'image' || fieldAttribs.type === 'file') {
         this.selectorsWithFile.push(fieldName);
@@ -173,7 +173,7 @@ export default class FieldsSubPostComponent extends React.Component {
         }
 
         <tr style={styles}>
-          
+
           <td>
             <InputComponent
               attribs={{type: 'hidden'}}
@@ -223,7 +223,7 @@ export default class FieldsSubPostComponent extends React.Component {
     }
     if(field.attribs.type == 'image') {
       return (<img style={ { width: '50px',  height: 'auto', marginLeft: '30px' } } src={ field.value } />)
-    } 
+    }
     return (<strong styles={styles}>{ field.value }</strong>)
   }
 
@@ -237,7 +237,7 @@ export default class FieldsSubPostComponent extends React.Component {
     const props = this.props;
     const { store } = this.context;
     const state  = store.getState();
-    
+
     for(let f of Object.keys(this.props.fields)) {
       if(field_key == f) {
         return this.props.fields[f];
@@ -256,10 +256,10 @@ export default class FieldsSubPostComponent extends React.Component {
     let $ = jQuery;
     let self = this;
 
-    this.selectorsWithWysiwyg.forEach(function(s){
-      if(typeof(tinyMCE) == 'object' && typeof( tinyMCE.execCommand ) == 'function') {
-        tinyMCE.execCommand('mceAddEditor', true, $('[name="' + s + '"]').attr('id'));
-      }
+    this.fieldsWithWysiwyg.forEach(function(s){
+      // Mirror the main content settings
+      let settings = $.extend({}, tinyMCEPreInit.mceInit.content);
+      wp.editor.initialize(s.attribs.id, {tinymce: settings, quicktags: true});
     });
   }
 

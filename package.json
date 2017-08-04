@@ -27,5 +27,9 @@
     "expect": "^1.20.2",
     "react-redux": "^4.4.5",
     "redux": "^3.6.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --watch -p"
   }
 }
