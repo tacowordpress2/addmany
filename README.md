@@ -1,5 +1,5 @@
 # AddMany:
-In simplest terms allows relationships between posts. 
+In simplest terms allows relationships between posts.
 The visual interface gives WordPress admin the ability to assign one-to-many relationships with children that share no other parents. You can also allow many-to-many relationships where children may have many parents and vice versa. You can even create shared fields between parent and children which is important for things like products that may change price at different store locations. More on that later.
 
 Similar to ACF (Advanced Custom Fields), AddMany has the ability to create and repeat sets of fields. The main difference being, it puts control back into the hands of the developer and allows you to write custom MySQL queries if need be.
@@ -24,14 +24,14 @@ Similar to ACF (Advanced Custom Fields), AddMany has the ability to create and r
 * [Convenience Methods](https://github.com/tacowordpress/addmany/blob/master/README.md#convenience-methods)
 
 
- 
+
 ## Use Cases
  * relate posts to other posts
  * control the order of posts (custom post types)
  * assign modules or panels to a layout that are customizable
  * repeat an arbitrary number of fields (like ACF repeater)
  * overriding a post(s) fields on a case by case basis without affecting the original
- * keeps context by allowing you to create child posts on the same page 
+ * keeps context by allowing you to create child posts on the same page
 
 ## How it Works
 
@@ -45,7 +45,7 @@ Similar to ACF (Advanced Custom Fields), AddMany has the ability to create and r
 
 **Why is there a "Subpost" between my current post and the related post? What is a SubPost?**
 
-It would probably be helpful to explain what a "SubPost" is. It is a custom post type that sits between the post and the related post. It's hidden from the WordPress admin menus but you're actually seeing as a row whenever you add a related post in the UI. 
+It would probably be helpful to explain what a "SubPost" is. It is a custom post type that sits between the post and the related post. It's hidden from the WordPress admin menus but you're actually seeing as a row whenever you add a related post in the UI.
 
 **There are a number of important reasons why AddMany uses a SubPost:**
 
@@ -61,10 +61,10 @@ It would probably be helpful to explain what a "SubPost" is. It is a custom post
 AddMany would not be possible without [The TacoWordPress framework – An ORM for custom post types.](https://github.com/tacowordpress/tacowordpress) This is a requirement.
 
 ###### Other requirements:
- * PHP >= 5.4 
+ * PHP >= 5.4
  * Knowledge of requiring packages through Composer
  * Prior knowledge of TacoWordpress
- * Object-oriented programming 
+ * Object-oriented programming
 
 ###### Built with [React](https://facebook.github.io/react/) and PHP
 
@@ -80,14 +80,14 @@ In your project's composer.json file, add the packages below in the require sect
   "tacowordpress/util": "dev-master"
 }
 ```
-Run `composer update` or `composer install` in the terminal. 
+Run `composer update` or `composer install` in the terminal.
 
 In your theme's function file, add the below:
 ```php
 
-// Add this so your project has access to Composer's autoloaded files. 
+// Add this so your project has access to Composer's autoloaded files.
 // Please replace "{path_to_autolaod}".
-require_once '{path_to_autoload}/autoload.php'; 
+require_once '{path_to_autoload}/autoload.php';
 
 // Make sure to initialize the core dependency of AddMany, "TacoWordPress".
 \Taco\Loader::init();
@@ -113,9 +113,9 @@ https://github.com/tacowordpress/tacowordpress/wiki.
           'first_name' => ['type' => 'text'],
           'last_name' => ['type' => 'text'],
           'bio' => ['type' => 'textarea']
-        ], 
+        ],
         ['limit_range' => [2, 3]] // Enforce a minimum of 2 items, but no more than 3.
-       )->toArray() 
+       )->toArray()
     ];
   }
 ```
@@ -123,7 +123,7 @@ https://github.com/tacowordpress/tacowordpress/wiki.
 ### Many-to-Many (AddBySearch)
 
 ```php
-// Example configuration for an AddMany field with AddBySearch 
+// Example configuration for an AddMany field with AddBySearch
 // Adds a search field for querying posts via AJAX
 
   public function getFields() {
@@ -132,7 +132,7 @@ https://github.com/tacowordpress/tacowordpress/wiki.
     ];
   }
  ```
- 
+
 ### Many-to-Many with unique common fields between 2 posts (like a junction table)
 In this example, the shared fields are between the parent post and the child posts of "products".
  ```php
@@ -150,9 +150,9 @@ class Store extends \Taco\Post {
  }
  ```
  Because the above will reference external "product" posts, you have the ability to extend their values ("price" and "tax" is a good use case) while also keeping their original values. This is useful for creating products and allowing them to slightly vary between stores.
- 
- 
- 
+
+
+
 ### One-to-Many with field variations
 
 Field variations allow the admin user to select and add a combination of different field groups. This allows for more customization of layouts. An example might be a sidebar that has many different modules. Each module would have a different set of fields that control the content, look, and feel. Another example (featured below) might be a staff page with a grid of photos and information for each person. Instead of the layout being separated by staff member type, they are mixed together. You could create 1 field group with all the fields necessary to satifsy both staff member types, but that might cause some field bloat. With fields variations, you can create one field group for board members and another for general staff while keeping them together in the same grid.
@@ -176,7 +176,7 @@ Field variations allow the admin user to select and add a combination of differe
             'department' => ['type' => 'select', 'options' => $this->getDepartments()]
           ],
         ]
-       )->toArray() 
+       )->toArray()
     ];
   }
 ```
@@ -193,9 +193,9 @@ class Person extends \Taco\Post {
         [
           'first_name' => ['type' => 'text'],
           'phone' => ['type' => 'text']
-        ], 
+        ],
         ['limit_range' => [0, 1]] // Do not allow more than 1 item to be added
-       )->toArray() 
+       )->toArray()
     ];
   }
  }
@@ -205,7 +205,7 @@ class Person extends \Taco\Post {
 ## Getting a post's relations
 
 
-In your template you can get related posts by accessing the field name through your object, 
+In your template you can get related posts by accessing the field name through your object,
 e.g. ```$blog_post->related_posts```
 This will return a collection of post objects.
 
@@ -230,11 +230,11 @@ $blog_post = \Taco\Post\Factory::create($post); ?>
 <?php endforeach; ?>
 
 ```
-###### What if no related posts exist in the object? 
+###### What if no related posts exist in the object?
 In other words, the admin did not manually select them.
 You can define a fallback method. This will alow for cleaner code in your template by removing any logic.
 
-This example shows a method that is defined in the Post class: 
+This example shows a method that is defined in the Post class:
 ```php
   public function getFallBackRelatedPosts($key) {
     global $post;
@@ -242,8 +242,8 @@ This example shows a method that is defined in the Post class:
       ? $post->ID
       : null;
     if($key === 'related_posts') {
-      return \Taco\Post::getWhere(['posts_per_page' => 3, 'exclude' => $post_id]); 
-      // The above actually just gets the 3 most recent posts, excluding the current one. 
+      return \Taco\Post::getWhere(['posts_per_page' => 3, 'exclude' => $post_id]);
+      // The above actually just gets the 3 most recent posts, excluding the current one.
       // This is a poor example. Don't be this lazy!
     }
   }
@@ -266,7 +266,7 @@ IMPORTANT: The method you define must be named "getFallBackRelatedPosts". It can
 
 
 ## Getting original values of a referenced post if overwritten
-With AddMany you can override values from a post that you reference through AddBySearch. This is extremely useful if you have a template (of some sort) or even a product that may need its values replaced without having to recreate it. 
+With AddMany you can override values from a post that you reference through AddBySearch. This is extremely useful if you have a template (of some sort) or even a product that may need its values replaced without having to recreate it.
 
 Let's say there are a chain of stores that all carry the same product/s but the prices vary from location to location.
 The following code will allow this:
@@ -302,7 +302,7 @@ foreach($store->products as $product): ?>
 <?php endforeach; ?>
 ```
 By accessing the property of "original_fields", you will get the original value while keeping the new value.
-`$product->original_fields->price;` 
+`$product->original_fields->price;`
 
 This is also useful to show product savings after a reduction in price.
 
@@ -356,7 +356,7 @@ We will use the example above where the UI needs to return posts of the custom p
 ```
 *Note*: It's important to keep the text querying ("s" property) in the WP_Query so the user admin can still search with keywords. Also, when returning an array, the key is required to be the post ID and value "should" be the post title but that isn't totally necessary.
 
-Next we need assign this method in "getFields()". 
+Next we need assign this method in "getFields()".
 
 ```php
 public function getFields() {
@@ -373,7 +373,7 @@ Reordering via drag and drop can be cumbersome when the height of rows grow and 
 
 Here's an example how.
 
-```php 
+```php
 
 public function getFields() {
   return [
@@ -389,7 +389,7 @@ public function getFields() {
 The Factory class of AddMany has a few convenience methods to make your code just a little cleaner:
 
 Basic AddMany
-`\Taco\AddMany\createAndGet()` will return the array without having to call `->toArray()` 
+`\Taco\AddMany\createAndGet()` will return the array without having to call `->toArray()`
 
 AddMany with AddBySearch
 
@@ -399,3 +399,10 @@ AddMany with AddBySearch
 ## Contributing (Coming soon)
 
 
+## Changelog
+
+### v0.2
+Adding Visual and Text tabs to WYSIWYGs
+
+### v0.1
+Initial branch of addmany
