@@ -157,6 +157,10 @@ Trait Mixins {
             return $val;
         }
 
+        if ($key === 'rotator_panels') {
+             $field = $this->getField($key);
+        }
+
         $field = $this->getField($key);
 
         if (\Taco\Util\Arr::iterable($field)

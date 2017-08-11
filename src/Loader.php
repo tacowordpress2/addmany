@@ -4,6 +4,7 @@ namespace Taco\AddMany;
 
 use \FrontendLoader\FrontendLoader;
 require __DIR__.'/SubPost.php';
+require __DIR__.'/SubPostRevision.php';
 
 class Loader
 {

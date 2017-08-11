@@ -223,7 +223,13 @@ class AddMany {
     if(!array_key_exists('field_assigned_to', $post_data)) {
       return false;
     }
-    $subpost = new \SubPost;
+
+    if (!empty($post_data['revision_parent'])) {
+      $subpost = new \SubPostRevision;
+    } else {
+      $subpost = new \SubPost;
+    }
+
     $subpost->set('post_title', 'AddMany subpost '.md5(mt_rand()));
     $subpost->set('post_parent', $post_data['parent_id']);
     $subpost->set('post_status', $post_data['draft']);
@@ -242,10 +248,17 @@ class AddMany {
     );
 
     $id = $subpost->save();
-    return self::getSingleAJAXSubPost(
-      $post_data['field_assigned_to'],
-      $subpost, $post_data['parent_id']
-    );
+
+    // Output the parent AJAX on a new subpost, otherwise just return
+    if (empty($post_data['revision_parent'])) {
+      return self::getSingleAJAXSubPost(
+        $post_data['field_assigned_to'],
+        $subpost,
+        $post_data['parent_id']
+      );
+    } else {
+      return $subpost->ID;
+    }
   }
 
   public static function AJAXSubmit() {
@@ -396,8 +409,14 @@ class AddMany {
   }
 
   public static function getFieldDefinitionKeys($field_assigned_to, $parent_id, $fields_variation) {
-    $post_parent = \Taco\Post\Factory::create($parent_id);
-    $post_parent->loaded_post = $post_parent;
+    if (wp_is_post_revision($parent_id)) {
+      $revision = get_post($parent_id);
+      $base_post_id = $revision->post_parent;
+    } else {
+      $base_post_id = $parent_id;
+    }
+
+    $post_parent = \Taco\Post\Factory::create($base_post_id);
     return array_keys(
       (array) $post_parent->getFields()[$field_assigned_to]['config_addmany']['field_variations'][$fields_variation]['fields']
     );
@@ -424,10 +443,16 @@ class AddMany {
 
 
   public static function getChildPosts($parent_id, $field_assigned_to) {
+    if(wp_is_post_revision($parent_id)) {
+      $post_type = 'sub-post-revision';
+    } else {
+      $post_type = 'sub-post';
+    }
+
     return \Taco\Post\Factory::createMultiple(
       get_posts(
         [
-          'post_type' => 'sub-post',
+          'post_type' => $post_type,
           'post_status' => 'publish',
           'post_parent' => $parent_id,
           'posts_per_page' => -1,
@@ -561,9 +586,28 @@ class AddMany {
     $subpost = \SubPost::find($post_id);
     $field_assigned_to = $subpost->get('field_assigned_to');
 
-    if(wp_is_post_revision($object_post_parent_id)) return;
+    if(wp_is_post_revision($object_post_parent_id)) {
+      // Duplicate these subposts as revisions onto the parent.  This is a little less than ideal
+      // since these subposts don't become revisions on the original subposts, but subposts on the parent post revision
+      // because WordPress only has 1 post_parent field
+      $revision = get_post($object_post_parent_id);
 
-    $post_parent = \Taco\Post\Factory::create($object_post_parent_id);
+      // Save the actual post parent ID here since we'll need it later
+      $base_post_parent_id = $revision->post_parent;
+
+      $subpost_fields = $subpost->_info;
+      $subpost_fields['parent_id']         = $object_post_parent_id;
+      $subpost_fields['draft']             = $subpost->_info['post_status'];
+      $subpost_fields['current_variation'] = $subpost->_info['fields_variation'];
+      $subpost_fields['revision_parent']   = $revision->post_parent;
+      $subpost_fields['order']             = $subpost->_info['order'];
+
+      $post_id = self::createNewSubPost($subpost_fields);
+    } else {
+      $base_post_parent_id = $object_post_parent_id;
+    }
+
+    $post_parent = \Taco\Post\Factory::create($base_post_parent_id);
     $parent_fields = $post_parent->getFields();
 
     if(!array_key_exists($field_assigned_to, $parent_fields)) return false;
