@@ -400,8 +400,9 @@ AddMany with AddBySearch
 
 
 ## Changelog
+
 ### v0.2.1
-* Making subpost previews work
+* Making subpost previews and revisions work
 
 ### v0.2
 * Adding Visual and Text tabs to WYSIWYGs

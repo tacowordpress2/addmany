@@ -111,6 +111,12 @@ export default class AddManyComponent extends React.Component {
             type="hidden"
             value={removed} />
 
+          {/** So we can save this post as JSON **/}
+          <InputComponent
+              attribs={{type: 'hidden'}}
+              name={this.props.fieldName}
+              dbValue={JSON.stringify(store.getState())} />
+
           {
             (variations !== null)
               ? <select
@@ -152,6 +158,12 @@ export default class AddManyComponent extends React.Component {
             type="hidden"
             value={removed} />
 
+          {/** So we can save this post as JSON **/}
+          <InputComponent
+              attribs={{type: 'hidden'}}
+              name={this.props.fieldName}
+              dbValue={JSON.stringify(store.getState())} />
+
           <input
             type="text"
             ref="searchableText"
@@ -174,7 +186,7 @@ export default class AddManyComponent extends React.Component {
 
           <br />
           <br />
-          
+
           <span className={'addmany-messages ' + ((messages) ? ' show ' : ' ') + messageType}>{ messages }</span>
           <br />
           <b>Your Selection</b>
@@ -393,7 +405,7 @@ export default class AddManyComponent extends React.Component {
    * @return void
    */
   addOrderingPosts(posts) {
-    const { store } = this.context;    
+    const { store } = this.context;
     const state = store.getState();
     const subposts = state.subposts;
 
@@ -695,8 +707,8 @@ export default class AddManyComponent extends React.Component {
             type: 'UPDATE_MESSAGES',
             messages: '',
             messageType: ''
-          }); 
-        }, 3000);      
+          });
+        }, 3000);
       }
     });
   }
@@ -817,7 +829,7 @@ export default class AddManyComponent extends React.Component {
   loadSaved(callback) {
     let $ = jQuery;
     let self = this;
-    
+
     $.ajax({
       url: AJAXSubmit.ajaxurl,
       method: 'post',

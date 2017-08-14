@@ -150,19 +150,8 @@ Trait Mixins {
     */
     public function get($key, $convert_value = false)
     {
-        $val = (array_key_exists($key, $this->_info))
-            ? $this->_info[$key]
-            : null;
-        if (!is_null($val) && $val !== '' && !$convert_value) {
-            return $val;
-        }
-
-        if ($key === 'rotator_panels') {
-             $field = $this->getField($key);
-        }
-
+        // Try to get the add many subposts first, then try to get the value set on the object since we need to save the JSON now
         $field = $this->getField($key);
-
         if (\Taco\Util\Arr::iterable($field)
             && array_key_exists('data-addmany', $field)
             && $field['data-addmany'] === true
@@ -180,6 +169,13 @@ Trait Mixins {
                 $relations = current($relations);
             }
             return $relations;
+        } else {
+            $val = (array_key_exists($key, $this->_info))
+                ? $this->_info[$key]
+                : null;
+            if (!is_null($val) && $val !== '' && !$convert_value) {
+                return $val;
+            }
         }
         if (!$convert_value) {
             if (!$field) {

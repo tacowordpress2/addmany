@@ -425,7 +425,6 @@ class AddMany {
   private static function getFieldDefinitionKeyAttribs($field_assigned_to, $parent_id, $fields_variation, $exclude_value=false) {
 
     $post_parent = \Taco\Post\Factory::create($parent_id);
-    $post_parent->loaded_post = $post_parent;
 
     $record_fields = $post_parent->getFields()[$field_assigned_to]['config_addmany']['field_variations'][$fields_variation]['fields'];
     $fields_attribs = [];

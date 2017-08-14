@@ -22858,7 +22858,10 @@
 	        return _react2.default.createElement('div', { ref: 'main_container', className: 'addmany-component' }, _react2.default.createElement('input', {
 	          name: 'addmany_deleted_ids[' + this.props.fieldName + ']',
 	          type: 'hidden',
-	          value: removed }), variations !== null ? _react2.default.createElement('select', {
+	          value: removed }), _react2.default.createElement(_InputComponent2.default, {
+	          attribs: { type: 'hidden' },
+	          name: this.props.fieldName,
+	          dbValue: JSON.stringify(store.getState()) }), variations !== null ? _react2.default.createElement('select', {
 	          value: currentVariation,
 	          onChange: function onChange(e) {
 	            store.dispatch({
@@ -22876,7 +22879,10 @@
 	        return _react2.default.createElement('div', { ref: 'main_container', className: 'addmany-component with-addbysearch' }, _react2.default.createElement('input', {
 	          name: 'addmany_deleted_ids[' + this.props.fieldName + ']',
 	          type: 'hidden',
-	          value: removed }), _react2.default.createElement('input', {
+	          value: removed }), _react2.default.createElement(_InputComponent2.default, {
+	          attribs: { type: 'hidden' },
+	          name: this.props.fieldName,
+	          dbValue: JSON.stringify(store.getState()) }), _react2.default.createElement('input', {
 	          type: 'text',
 	          ref: 'searchableText',
 	          placeholder: 'search for posts',
