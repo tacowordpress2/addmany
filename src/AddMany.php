@@ -688,20 +688,43 @@ class AddMany {
   public static function restoreSubposts($post, $revision_id, $meta_value) {
     global $wpdb;
 
+    // Get subposts to restore
     $sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'sub-post-revision' AND post_parent = $revision_id";
     $revision_subposts = $wpdb->get_results($sql, ARRAY_A);
 
+    // Get old subpost IDs to delete
+    $sql = "SELECT ID FROM $wpdb->posts WHERE post_type ='sub-post' AND post_parent = {$post->ID}";
+    $old_subposts = $wpdb->get_results($sql, ARRAY_A);
+    $old_subpost_ids = implode(',', array_map(function($item) {
+      return $item['ID'];
+    }, $old_subposts));
+
+    // Delete old subposts
     $sql = "DELETE FROM $wpdb->posts WHERE post_type ='sub-post' AND post_parent = {$post->ID}";
-    echo $sql;
-    exit;
+    $wpdb->query($sql);
+
+    // Delete old subpost metadata
+    $sql = "DELETE FROM $wpdb->postneta WHERE post_id IN($old_subpost_ids)";
     $wpdb->query($sql);
 
     foreach ($revision_subposts as $subpost) {
+      // Grab metadata to restore
+      $meta_sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = {$subpost['ID']}";
+      $metas = $wpdb->get_results($meta_sql, ARRAY_A);
+
       unset($subpost['ID']);
       $subpost['post_parent'] = $post->ID;
-      $subpost['post_type'] = 'subpost';
+      $subpost['post_type'] = 'sub-post';
 
-      wp_update_post($subpost);
+      // Insert new subposts
+      $wpdb->insert($wpdb->posts, $subpost);
+      $new_subpost_id = $wpdb->insert_id;
+
+      // Insert new subpost metadata
+      foreach($metas as $meta) {
+        $meta['post_id'] = $new_subpost_id;
+        $wpdb->insert($wpdb->postmeta, $meta);
+      }
     }
   }
 }
