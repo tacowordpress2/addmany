@@ -24525,13 +24525,32 @@
 	    return _this;
 	  }
 	
-	  /**
-	   * Convert options for a select field to React Components
-	   * @param array options
-	   * @return array of React components
-	   */
-	
 	  _createClass(InputComponent, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this2 = this;
+	
+	      if (this.refs.image_upload) {
+	        // This is incredibly hacky because the image file name is populated via jQuery
+	        // Trigger a manual upload field changes since it's a jquery change
+	        jQuery(this.refs.image_upload).on('change', function (e) {
+	          _this2.context.store.dispatch({
+	            type: 'UPDATE_VALUE',
+	            field: _this2.props.fieldName,
+	            subpostId: _this2.props.subpostId,
+	            value: jQuery(_this2.refs.image_upload).val()
+	          });
+	        });
+	      }
+	    }
+	
+	    /**
+	     * Convert options for a select field to React Components
+	     * @param array options
+	     * @return array of React components
+	     */
+	
+	  }, {
 	    key: 'convertOptions',
 	    value: function convertOptions(options) {
 	      if (typeof options === 'undefined' || options === null) {
@@ -24558,7 +24577,7 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this3 = this;
 	
 	      var props = this.props;
 	      var store = this.context.store;
@@ -24575,8 +24594,8 @@
 	          onChange: function onChange(e) {
 	            store.dispatch({
 	              type: 'UPDATE_VALUE',
-	              field: _this2.props.fieldName,
-	              subpostId: _this2.props.subpostId,
+	              field: _this3.props.fieldName,
+	              subpostId: _this3.props.subpostId,
 	              value: e.target.value
 	            });
 	          },
@@ -24593,8 +24612,8 @@
 	          onChange: function onChange(e) {
 	            store.dispatch({
 	              type: 'UPDATE_VALUE',
-	              field: _this2.props.fieldName,
-	              subpostId: _this2.props.subpostId,
+	              field: _this3.props.fieldName,
+	              subpostId: _this3.props.subpostId,
 	              value: e.target.value
 	            });
 	          },
@@ -24605,18 +24624,11 @@
 	
 	      if (attribs.type === 'image' || attribs.type === 'file') {
 	        return _react2.default.createElement('div', { className: 'upload_field' }, _react2.default.createElement('input', {
+	          ref: 'image_upload',
 	          type: 'text',
 	          className: 'upload',
 	          id: attribs.id,
 	          name: this.props.name,
-	          onChange: function onChange(e) {
-	            store.dispatch({
-	              type: 'UPDATE_VALUE',
-	              field: _this2.props.fieldName,
-	              subpostId: _this2.props.subpostId,
-	              value: e.target.value
-	            });
-	          },
 	          defaultValue: this.props.dbValue
 	        }), _react2.default.createElement('input', { type: 'button', className: 'browse', value: 'Select file' }), _react2.default.createElement('input', { type: 'button', className: 'clear', value: 'Clear' }));
 	      }
@@ -24629,8 +24641,8 @@
 	          onChange: function onChange(e) {
 	            store.dispatch({
 	              type: 'UPDATE_VALUE',
-	              field: _this2.props.fieldName,
-	              subpostId: _this2.props.subpostId,
+	              field: _this3.props.fieldName,
+	              subpostId: _this3.props.subpostId,
 	              value: e.target.value
 	            });
 	          },
@@ -24642,8 +24654,8 @@
 	        onChange: function onChange(e) {
 	          store.dispatch({
 	            type: 'UPDATE_VALUE',
-	            field: _this2.props.fieldName,
-	            subpostId: _this2.props.subpostId,
+	            field: _this3.props.fieldName,
+	            subpostId: _this3.props.subpostId,
 	            value: e.target.value
 	          });
 	        },
