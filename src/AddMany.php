@@ -640,6 +640,8 @@ class AddMany {
   }
 
   private static function deleteSubPosts() {
+    global $wpdb;
+
     if(!array_key_exists('addmany_deleted_ids', $_POST)) return;
     if(!\Taco\Util\Arr::iterable($_POST['addmany_deleted_ids'])) return;
     foreach($_POST['addmany_deleted_ids'] as $string_ids) {
@@ -647,7 +649,8 @@ class AddMany {
       $ids = explode(',', $string_ids);
       if(!Arr::iterable($ids)) return false;
       foreach($ids as $id) {
-        wp_delete_post((int) $id, true);
+        $sql = "UPDATE $wpdb->posts SET post_status = 'deleted' WHERE ID = $id";
+        $wpdb->query($sql);
       }
     }
   }
@@ -674,5 +677,31 @@ class AddMany {
     }
 
     return true;
+  }
+
+  /*
+   * Restore subposts attached to this post revision to be those attached to the main post
+   * This is a little hacky, as it deletes the original subposts, then duplicates the revision posts
+   * and assigns them back to the main post.
+   * NOTE: This DOES cause the post IDs attached to the post to NOT match up with the JSON
+   */
+  public static function restoreSubposts($post, $revision_id, $meta_value) {
+    global $wpdb;
+
+    $sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'sub-post-revision' AND post_parent = $revision_id";
+    $revision_subposts = $wpdb->get_results($sql, ARRAY_A);
+
+    $sql = "DELETE FROM $wpdb->posts WHERE post_type ='sub-post' AND post_parent = {$post->ID}";
+    echo $sql;
+    exit;
+    $wpdb->query($sql);
+
+    foreach ($revision_subposts as $subpost) {
+      unset($subpost['ID']);
+      $subpost['post_parent'] = $post->ID;
+      $subpost['post_type'] = 'subpost';
+
+      wp_update_post($subpost);
+    }
   }
 }

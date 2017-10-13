@@ -158,6 +158,18 @@
 	        messages: action.messages,
 	        messageType: action.messageType
 	      });
+	    case 'UPDATE_VALUE':
+	      var new_subposts = state.subposts.map(function (el) {
+	        if (el.postId === action.subpostId) {
+	          el.fieldsConfig[action.field].value = action.value;
+	        }
+	
+	        return el;
+	      });
+	
+	      return Object.assign({}, state, {
+	        subposts: new_subposts
+	      });
 	    default:
 	      return state;
 	  }
@@ -22858,9 +22870,10 @@
 	        return _react2.default.createElement('div', { ref: 'main_container', className: 'addmany-component' }, _react2.default.createElement('input', {
 	          name: 'addmany_deleted_ids[' + this.props.fieldName + ']',
 	          type: 'hidden',
-	          value: removed }), _react2.default.createElement(_InputComponent2.default, {
-	          attribs: { type: 'hidden' },
+	          value: removed }), _react2.default.createElement('input', {
+	          type: 'hidden',
 	          name: this.props.fieldName,
+	          value: JSON.stringify(store.getState()),
 	          dbValue: JSON.stringify(store.getState()) }), variations !== null ? _react2.default.createElement('select', {
 	          value: currentVariation,
 	          onChange: function onChange(e) {
@@ -22879,9 +22892,10 @@
 	        return _react2.default.createElement('div', { ref: 'main_container', className: 'addmany-component with-addbysearch' }, _react2.default.createElement('input', {
 	          name: 'addmany_deleted_ids[' + this.props.fieldName + ']',
 	          type: 'hidden',
-	          value: removed }), _react2.default.createElement(_InputComponent2.default, {
-	          attribs: { type: 'hidden' },
+	          value: removed }), _react2.default.createElement('input', {
+	          type: 'hidden',
 	          name: this.props.fieldName,
+	          value: JSON.stringify(store.getState()),
 	          dbValue: JSON.stringify(store.getState()) }), _react2.default.createElement('input', {
 	          type: 'text',
 	          ref: 'searchableText',
@@ -24169,7 +24183,9 @@
 	        group.push(_react2.default.createElement('tr', { key: o }, _react2.default.createElement('td', null, _TacoStr2.default.human(o)), _react2.default.createElement('td', null, _react2.default.createElement(_InputComponent2.default, {
 	          name: fieldName,
 	          dbValue: props.value,
-	          attribs: fieldAttribs
+	          attribs: fieldAttribs,
+	          fieldName: o,
+	          subpostId: this.props.subpostId
 	        }), typeof fieldAttribs.description != 'undefined' ? _react2.default.createElement('p', null, ' ', fieldAttribs.description) : null)));
 	      }
 	      return group;
@@ -24542,6 +24558,8 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+	
 	      var props = this.props;
 	      var store = this.context.store;
 	
@@ -24554,6 +24572,14 @@
 	        return _react2.default.createElement('select', _extends({
 	          name: this.props.name
 	        }, attribs, {
+	          onChange: function onChange(e) {
+	            store.dispatch({
+	              type: 'UPDATE_VALUE',
+	              field: _this2.props.fieldName,
+	              subpostId: _this2.props.subpostId,
+	              value: e.target.value
+	            });
+	          },
 	          defaultValue: this.props.dbValue }), selectOptions);
 	      }
 	
@@ -24564,6 +24590,14 @@
 	          type: 'checkbox',
 	          name: this.props.name
 	        }, attribs, {
+	          onChange: function onChange(e) {
+	            store.dispatch({
+	              type: 'UPDATE_VALUE',
+	              field: _this2.props.fieldName,
+	              subpostId: _this2.props.subpostId,
+	              value: e.target.value
+	            });
+	          },
 	          defaultValue: '1',
 	          defaultChecked: this.props.dbValue
 	        }));
@@ -24575,6 +24609,14 @@
 	          className: 'upload',
 	          id: attribs.id,
 	          name: this.props.name,
+	          onChange: function onChange(e) {
+	            store.dispatch({
+	              type: 'UPDATE_VALUE',
+	              field: _this2.props.fieldName,
+	              subpostId: _this2.props.subpostId,
+	              value: e.target.value
+	            });
+	          },
 	          defaultValue: this.props.dbValue
 	        }), _react2.default.createElement('input', { type: 'button', className: 'browse', value: 'Select file' }), _react2.default.createElement('input', { type: 'button', className: 'clear', value: 'Clear' }));
 	      }
@@ -24584,11 +24626,27 @@
 	        return _react2.default.createElement('textarea', _extends({
 	          name: this.props.name
 	        }, attribs, {
+	          onChange: function onChange(e) {
+	            store.dispatch({
+	              type: 'UPDATE_VALUE',
+	              field: _this2.props.fieldName,
+	              subpostId: _this2.props.subpostId,
+	              value: e.target.value
+	            });
+	          },
 	          defaultValue: this.props.dbValue }));
 	      }
 	      return _react2.default.createElement('input', _extends({
 	        name: this.props.name
 	      }, attribs, {
+	        onChange: function onChange(e) {
+	          store.dispatch({
+	            type: 'UPDATE_VALUE',
+	            field: _this2.props.fieldName,
+	            subpostId: _this2.props.subpostId,
+	            value: e.target.value
+	          });
+	        },
 	        defaultValue: this.props.dbValue
 	      }));
 	    }

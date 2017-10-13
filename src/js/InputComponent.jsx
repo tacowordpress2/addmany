@@ -60,6 +60,14 @@ export default class InputComponent extends React.Component {
         <select
           name={this.props.name}
           {...attribs}
+          onChange={(e) => {
+            store.dispatch({
+              type: 'UPDATE_VALUE',
+              field: this.props.fieldName,
+              subpostId: this.props.subpostId,
+              value: e.target.value,
+            })
+          }}
           defaultValue={this.props.dbValue}>
             {selectOptions}
         </select>
@@ -74,6 +82,14 @@ export default class InputComponent extends React.Component {
           type="checkbox"
           name={this.props.name}
           {...attribs}
+          onChange={(e) => {
+            store.dispatch({
+              type: 'UPDATE_VALUE',
+              field: this.props.fieldName,
+              subpostId: this.props.subpostId,
+              value: e.target.value,
+            })
+          }}
           defaultValue="1"
           defaultChecked={this.props.dbValue}
         />
@@ -88,6 +104,14 @@ export default class InputComponent extends React.Component {
             className="upload"
             id={attribs.id}
             name={this.props.name}
+            onChange={(e) => {
+              store.dispatch({
+                type: 'UPDATE_VALUE',
+                field: this.props.fieldName,
+                subpostId: this.props.subpostId,
+                value: e.target.value,
+              })
+            }}
             defaultValue={this.props.dbValue}
           />
           <input type="button" className="browse" value="Select file" />
@@ -102,6 +126,14 @@ export default class InputComponent extends React.Component {
         <textarea
           name={this.props.name}
           {...attribs}
+          onChange={(e) => {
+            store.dispatch({
+              type: 'UPDATE_VALUE',
+              field: this.props.fieldName,
+              subpostId: this.props.subpostId,
+              value: e.target.value,
+            })
+          }}
           defaultValue={this.props.dbValue}>
         </textarea>
       );
@@ -110,6 +142,14 @@ export default class InputComponent extends React.Component {
       <input
         name={this.props.name}
         {...attribs}
+        onChange={(e) => {
+          store.dispatch({
+            type: 'UPDATE_VALUE',
+            field: this.props.fieldName,
+            subpostId: this.props.subpostId,
+            value: e.target.value,
+          })
+        }}
         defaultValue={this.props.dbValue}
       />
     );

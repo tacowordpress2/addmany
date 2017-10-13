@@ -83,10 +83,22 @@ const reducer = (state = {}, action) => {
       subposts: action.subposts,
       isGloballyMinimized: action.isGloballyMinimized
     });
-     case 'UPDATE_MESSAGES':
+    case 'UPDATE_MESSAGES':
     return Object.assign({}, state, {
       messages: action.messages,
       messageType: action.messageType
+    });
+    case 'UPDATE_VALUE':
+    let new_subposts = state.subposts.map(function(el) {
+      if (el.postId === action.subpostId) {
+        el.fieldsConfig[action.field].value = action.value;
+      }
+
+      return el;
+    });
+
+    return Object.assign({}, state, {
+      subposts: new_subposts
     });
     default:
       return state;

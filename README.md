@@ -403,6 +403,9 @@ AddMany with AddBySearch
 
 ## Changelog
 
+### v0.2.2
+* Properly saving JSON values for revisions
+
 ### v0.2.1
 * Making subpost previews and revisions work
 

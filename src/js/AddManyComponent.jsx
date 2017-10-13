@@ -112,11 +112,11 @@ export default class AddManyComponent extends React.Component {
             value={removed} />
 
           {/** So we can save this post as JSON **/}
-          <InputComponent
-              attribs={{type: 'hidden'}}
-              name={this.props.fieldName}
-              dbValue={JSON.stringify(store.getState())} />
-
+          <input
+            type="hidden"
+            name={this.props.fieldName}
+            value={JSON.stringify(store.getState())}
+            dbValue={JSON.stringify(store.getState())} />
           {
             (variations !== null)
               ? <select
@@ -159,10 +159,11 @@ export default class AddManyComponent extends React.Component {
             value={removed} />
 
           {/** So we can save this post as JSON **/}
-          <InputComponent
-              attribs={{type: 'hidden'}}
-              name={this.props.fieldName}
-              dbValue={JSON.stringify(store.getState())} />
+          <input
+            type="hidden"
+            name={this.props.fieldName}
+            value={JSON.stringify(store.getState())}
+            dbValue={JSON.stringify(store.getState())} />
 
           <input
             type="text"
