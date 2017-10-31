@@ -23,13 +23,16 @@ Trait Mixins {
             return ($a->order - $b->order);
         });
         $post_class = $this->getPostClassFromAddBySearchConfig($field);
+        
         $helper = new $post_class;
         $linked_posts = array_map(function($s) use ($helper, $field_key, $ID) {
+            $helper->$loaded_post = $s->ID;
             $object = $helper::find($s->post_reference_id);
 
             $subfields = \Taco\AddMany\AddMany::getFieldDefinitionKeys(
                 $field_key, $ID, $s->get('fields_variation')
             );
+            
             $subpost_fields = $s->getFields();
             $original_fields = $object->getFields();
             $original_field_key_values = [];

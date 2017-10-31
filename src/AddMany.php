@@ -17,6 +17,7 @@ class AddMany {
   public $buttons = [];
   public $field_variations = [];
   public $limit_range = false;
+  public $custom_method_args = [];
   public $uses_ordering = false;
   public $show_on_collapsed = null;
 
@@ -39,6 +40,7 @@ class AddMany {
         'buttons' => $this->buttons,
         'field_variations' => $this->field_variations,
         'limit_range' => $this->limit_range,
+        'custom_method_args' => $this->custom_method_args,
         'show_on_collapsed' => $this->show_on_collapsed,
         'uses_ordering' => $this->uses_ordering
       ]
@@ -53,6 +55,7 @@ class AddMany {
         ]
       ],
       'limit_range' => false,
+      'custom_method_args' => [],
       'show_on_collapsed' => null,
       'uses_ordering' => false,
       'buttons' => ['reverse-sort', 'alpha-sort']
@@ -208,6 +211,10 @@ class AddMany {
           self::$field_definitions[$k]['limit_range'] = [];
         }
 
+        if(array_key_exists('custom_method_args', $config_addmany)) {
+          self::$field_definitions[$k]['custom_method_args'] = $config_addmany['custom_method_args'];
+        }
+
         if(array_key_exists('show_on_collapsed', $config_addmany)) {
           self::$field_definitions[$k]['show_on_collapsed'] = $config_addmany['show_on_collapsed'];
         }
@@ -263,6 +270,8 @@ class AddMany {
 
   public static function AJAXSubmit() {
     // is this an addbysearch request
+
+    $custom_method_args = array_key_exists('custom_method_args', $_POST) ? $_POST['custom_method_args'] : [];
     if(array_key_exists('class_method', $_POST)
       && array_key_exists('is_addbysearch', $_POST)
       && $_POST['is_addbysearch']
@@ -273,7 +282,8 @@ class AddMany {
         $_POST['class_method'],
         $_POST['field_assigned_to'],
         $_POST['parent_id'],
-        $_POST['keywords']
+        $_POST['keywords'],
+        $custom_method_args
       );
     }
     // is this a subpost request
@@ -302,7 +312,7 @@ class AddMany {
     }
   }
 
-  public static function getAJAXPostsUsingAddBySearch($class_method, $field_assigned_to, $parent_id, $keywords='') {
+  public static function getAJAXPostsUsingAddBySearch($class_method, $field_assigned_to, $parent_id, $keywords='', $custom_method_args=[]) {
 
     // TODO this block needs major refactoring
     $post_type_structure = self::getPostTypeStructure($class_method);
@@ -316,11 +326,11 @@ class AddMany {
     $class_method_config = $post_type_structure;
 
     if(array_key_exists('original_post_class', $class_method_config)) {
-      $results = self::getPairsWithKeyWords($keywords,  $class_method_config['original_post_class']);
-    } else {
+      $results = self::getPairsWithKeyWords($keywords,  $class_method_config['original_post_class'], $custom_method_args);
+    } else {      
       $helper = new $class_method_config[0];
       $method = $class_method_config[1];
-      $results = $helper->$method($keywords);
+      $results = $helper->$method($keyword, $class_method_config['original_post_class'], $custom_method_args);
     }
 
     // remove thyself
@@ -417,6 +427,7 @@ class AddMany {
     }
 
     $post_parent = \Taco\Post\Factory::create($base_post_id);
+
     return array_keys(
       (array) $post_parent->getFields()[$field_assigned_to]['config_addmany']['field_variations'][$fields_variation]['fields']
     );
@@ -640,8 +651,6 @@ class AddMany {
   }
 
   private static function deleteSubPosts() {
-    global $wpdb;
-
     if(!array_key_exists('addmany_deleted_ids', $_POST)) return;
     if(!\Taco\Util\Arr::iterable($_POST['addmany_deleted_ids'])) return;
     foreach($_POST['addmany_deleted_ids'] as $string_ids) {
@@ -649,8 +658,7 @@ class AddMany {
       $ids = explode(',', $string_ids);
       if(!Arr::iterable($ids)) return false;
       foreach($ids as $id) {
-        $sql = "UPDATE $wpdb->posts SET post_status = 'deleted' WHERE ID = $id";
-        $wpdb->query($sql);
+        wp_delete_post((int) $id, true);
       }
     }
   }
@@ -677,54 +685,5 @@ class AddMany {
     }
 
     return true;
-  }
-
-  /*
-   * Restore subposts attached to this post revision to be those attached to the main post
-   * This is a little hacky, as it deletes the original subposts, then duplicates the revision posts
-   * and assigns them back to the main post.
-   * NOTE: This DOES cause the post IDs attached to the post to NOT match up with the JSON
-   */
-  public static function restoreSubposts($post, $revision_id, $meta_value) {
-    global $wpdb;
-
-    // Get subposts to restore
-    $sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'sub-post-revision' AND post_parent = $revision_id";
-    $revision_subposts = $wpdb->get_results($sql, ARRAY_A);
-
-    // Get old subpost IDs to delete
-    $sql = "SELECT ID FROM $wpdb->posts WHERE post_type ='sub-post' AND post_parent = {$post->ID}";
-    $old_subposts = $wpdb->get_results($sql, ARRAY_A);
-    $old_subpost_ids = implode(',', array_map(function($item) {
-      return $item['ID'];
-    }, $old_subposts));
-
-    // Delete old subposts
-    $sql = "DELETE FROM $wpdb->posts WHERE post_type ='sub-post' AND post_parent = {$post->ID}";
-    $wpdb->query($sql);
-
-    // Delete old subpost metadata
-    $sql = "DELETE FROM $wpdb->postneta WHERE post_id IN($old_subpost_ids)";
-    $wpdb->query($sql);
-
-    foreach ($revision_subposts as $subpost) {
-      // Grab metadata to restore
-      $meta_sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = {$subpost['ID']}";
-      $metas = $wpdb->get_results($meta_sql, ARRAY_A);
-
-      unset($subpost['ID']);
-      $subpost['post_parent'] = $post->ID;
-      $subpost['post_type'] = 'sub-post';
-
-      // Insert new subposts
-      $wpdb->insert($wpdb->posts, $subpost);
-      $new_subpost_id = $wpdb->insert_id;
-
-      // Insert new subpost metadata
-      foreach($metas as $meta) {
-        $meta['post_id'] = $new_subpost_id;
-        $wpdb->insert($wpdb->postmeta, $meta);
-      }
-    }
   }
 }

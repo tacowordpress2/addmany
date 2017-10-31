@@ -78,8 +78,6 @@ export default class FieldsSubPostComponent extends React.Component {
               name={fieldName}
               dbValue={props.value}
               attribs={fieldAttribs}
-              fieldName={o}
-              subpostId={this.props.subpostId}
             />
             { (typeof fieldAttribs.description != 'undefined')  ? <p> { fieldAttribs.description }</p> : null }
           </td>

@@ -31,6 +31,10 @@ class Factory {
       );
     }
 
+    if(array_key_exists('args', $other_options)) {
+      $factory_instance->setCustomMethodArgs($other_options['args']);
+    }
+
     if(array_key_exists('show_on_collapsed', $other_options)) {
       $factory_instance->setShowOnCollapsed(
         $other_options['show_on_collapsed']
@@ -51,6 +55,10 @@ class Factory {
 
   public function setLimitRange($limit_range=false) {
     $this->current_object->limit_range = $limit_range;
+  }
+
+  public function setCustomMethodArgs($args=[]) {
+    $this->current_object->custom_method_args = $args;
   }
 
   public function setShowOnCollapsed($field_key) {
@@ -100,6 +108,10 @@ class Factory {
       $factory_instance->setLimitRange(
         $other_options['limit_range']
       );
+    }
+    
+    if(array_key_exists('args', $other_options)) {
+      $factory_instance->setCustomMethodArgs($other_options['args']);
     }
 
     if(array_key_exists('uses_ordering', $other_options) && $other_options['uses_ordering'] == true) {

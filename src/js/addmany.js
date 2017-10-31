@@ -83,22 +83,10 @@ const reducer = (state = {}, action) => {
       subposts: action.subposts,
       isGloballyMinimized: action.isGloballyMinimized
     });
-    case 'UPDATE_MESSAGES':
+     case 'UPDATE_MESSAGES':
     return Object.assign({}, state, {
       messages: action.messages,
       messageType: action.messageType
-    });
-    case 'UPDATE_VALUE':
-    let new_subposts = state.subposts.map(function(el) {
-      if (el.postId === action.subpostId) {
-        el.fieldsConfig[action.field].value = action.value;
-      }
-
-      return el;
-    });
-
-    return Object.assign({}, state, {
-      subposts: new_subposts
     });
     default:
       return state;
@@ -132,6 +120,7 @@ const AddManyComponentWithStore = connect(state => state)(AddManyComponent);
           fieldDefinitions={window.field_definitions}
           fieldName={$(this).attr('name')}
           limitRange={window.field_definitions[$(this).attr('name')]['limit_range']}
+          customMethodArgs={window.field_definitions[$(this).attr('name')]['custom_method_args']}
           showOnCollapsed={window.field_definitions[$(this).attr('name')]['show_on_collapsed']}
           usesOrdering={window.field_definitions[$(this).attr('name')]['uses_ordering']}
           isAddBySearch={typeof fieldDefinitions.is_addbysearch !== 'undefined'}

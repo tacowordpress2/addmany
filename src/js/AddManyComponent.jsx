@@ -112,11 +112,11 @@ export default class AddManyComponent extends React.Component {
             value={removed} />
 
           {/** So we can save this post as JSON **/}
-          <input
-            type="hidden"
-            name={this.props.fieldName}
-            value={JSON.stringify(store.getState())}
-            dbValue={JSON.stringify(store.getState())} />
+          <InputComponent
+              attribs={{type: 'hidden'}}
+              name={this.props.fieldName}
+              dbValue={JSON.stringify(store.getState())} />
+
           {
             (variations !== null)
               ? <select
@@ -159,11 +159,10 @@ export default class AddManyComponent extends React.Component {
             value={removed} />
 
           {/** So we can save this post as JSON **/}
-          <input
-            type="hidden"
-            name={this.props.fieldName}
-            value={JSON.stringify(store.getState())}
-            dbValue={JSON.stringify(store.getState())} />
+          <InputComponent
+              attribs={{type: 'hidden'}}
+              name={this.props.fieldName}
+              dbValue={JSON.stringify(store.getState())} />
 
           <input
             type="text"
@@ -368,6 +367,7 @@ export default class AddManyComponent extends React.Component {
         class_method: this.props.classMethod,
         field_assigned_to: this.props.fieldName,
         parent_id: this.props.parentPostId,
+        custom_method_args: this.props.customMethodArgs,
         keywords: state.keywords,
         action: 'AJAXSubmit',
         AJAXSubmit_nonce : AJAXSubmit.AJAXSubmit_nonce

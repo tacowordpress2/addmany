@@ -19,20 +19,6 @@ export default class InputComponent extends React.Component {
     this.state = {};
   }
 
-  componentDidMount() {
-    if(this.refs.image_upload) {
-      // This is incredibly hacky because the image file name is populated via jQuery
-      // Trigger a manual upload field changes since it's a jquery change
-      jQuery(this.refs.image_upload).on('change', (e) => {
-        this.context.store.dispatch({
-          type: 'UPDATE_VALUE',
-          field: this.props.fieldName,
-          subpostId: this.props.subpostId,
-          value: jQuery(this.refs.image_upload).val(),
-        });
-      });
-    }
-  }
 
   /**
    * Convert options for a select field to React Components
@@ -74,14 +60,6 @@ export default class InputComponent extends React.Component {
         <select
           name={this.props.name}
           {...attribs}
-          onChange={(e) => {
-            store.dispatch({
-              type: 'UPDATE_VALUE',
-              field: this.props.fieldName,
-              subpostId: this.props.subpostId,
-              value: e.target.value,
-            })
-          }}
           defaultValue={this.props.dbValue}>
             {selectOptions}
         </select>
@@ -96,14 +74,6 @@ export default class InputComponent extends React.Component {
           type="checkbox"
           name={this.props.name}
           {...attribs}
-          onChange={(e) => {
-            store.dispatch({
-              type: 'UPDATE_VALUE',
-              field: this.props.fieldName,
-              subpostId: this.props.subpostId,
-              value: e.target.value,
-            })
-          }}
           defaultValue="1"
           defaultChecked={this.props.dbValue}
         />
@@ -114,7 +84,6 @@ export default class InputComponent extends React.Component {
       return (
         <div className="upload_field">
           <input
-            ref="image_upload"
             type="text"
             className="upload"
             id={attribs.id}
@@ -133,14 +102,6 @@ export default class InputComponent extends React.Component {
         <textarea
           name={this.props.name}
           {...attribs}
-          onChange={(e) => {
-            store.dispatch({
-              type: 'UPDATE_VALUE',
-              field: this.props.fieldName,
-              subpostId: this.props.subpostId,
-              value: e.target.value,
-            })
-          }}
           defaultValue={this.props.dbValue}>
         </textarea>
       );
@@ -149,14 +110,6 @@ export default class InputComponent extends React.Component {
       <input
         name={this.props.name}
         {...attribs}
-        onChange={(e) => {
-          store.dispatch({
-            type: 'UPDATE_VALUE',
-            field: this.props.fieldName,
-            subpostId: this.props.subpostId,
-            value: e.target.value,
-          })
-        }}
         defaultValue={this.props.dbValue}
       />
     );
