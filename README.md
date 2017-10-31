@@ -312,7 +312,7 @@ This is also useful to show product savings after a reduction in price.
 If you're using the AddMany's AddbySearch functionality to query and assign related posts, there is a chance you need to narrow the results even further. Let's say you wanted to return posts of the custom post type person that have a term of "employee" but there are hundreds of people to pick from. You can create your own method to make the results more definitive. By default, the AddMany core method looks like this:
 
 ```php
-  public static function getPairsWithKeyWords($keywords, $post_type_class_name) {
+  public static function getPairsWithKeyWords($keywords, $post_type_class_name, $custom_args=[]) {
     $post_type = Str::machine(Str::camelToHuman($post_type_class_name), '-');
 
     $query = new \WP_Query([
@@ -333,17 +333,17 @@ If you're using the AddMany's AddbySearch functionality to query and assign rela
 We will use the example above where the UI needs to return posts of the custom post type person with a term of "employee" of the taxonony (slug) "person-type".
 
 ```php
- public static function getEmployees($keywords, $post_type_class_name) {
+ public static function getPeopleByPersonTypeTerm($keywords, $post_type_class_name, $custom_args=['terms' => 'employee') {
       $post_type = Str::machine(Str::camelToHuman($post_type_class_name), '-');
 
       $query = new \WP_Query([
-          'post_type' => 'person',
+          'post_type' => $post_type,
           's' => $keywords,
           'tax_query' => [
               [
                   'taxonomy' => 'person-type',
                   'field'    => 'slug',
-                  'terms'    => 'employee'
+                  'terms'    => $custom_args['terms']
               ],
           ),
           'posts_per_page' => -1
@@ -363,7 +363,7 @@ Next we need assign this method in "getFields()".
 ```php
 public function getFields() {
   return [
-    'products' => \Taco\AddMany\Factory::createWithAddBySearch('Person::getEmployees')
+    'products' => \Taco\AddMany\Factory::createWithAddBySearch('Person::getPeopleByPersonTypeTerm', null, [ 'args' => ['terms' => 'employee'] ])
   ];
 }
 ```
