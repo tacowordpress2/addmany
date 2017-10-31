@@ -403,6 +403,9 @@ AddMany with AddBySearch
 
 ## Changelog
 
+### v0.2.3
+* Added the ability to pass custom method arguments
+
 ### v0.2.2
 * Properly saving JSON values for revisions
 
