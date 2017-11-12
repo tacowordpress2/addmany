@@ -403,6 +403,9 @@ AddMany with AddBySearch
 
 ## Changelog
 
+### v0.2.4
+* Added a better way to order subposts
+
 ### v0.2.3
 * Added the ability to pass custom method arguments
 
