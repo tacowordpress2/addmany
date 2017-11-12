@@ -472,7 +472,7 @@ class AddMany {
               'value' => $field_assigned_to
             ]
           ],
-          'orderby' => 'meta_value',
+          'orderby' => 'meta_value_num',
           'meta_key' => 'order',
           'order' => 'ASC'
         ]
