@@ -204,6 +204,7 @@ class AddMany {
 
         if(
           array_key_exists('limit_range', $config_addmany)
+          && !is_bool($config_addmany['limit_range'])
           && count($config_addmany['limit_range']) == 2)
         {
           self::$field_definitions[$k]['limit_range'] = $config_addmany['limit_range'];
